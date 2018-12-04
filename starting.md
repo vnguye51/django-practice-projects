@@ -14,7 +14,7 @@ Use the command
 
 In the views folder 
 
-Inside  <appname>/views.py and replace it with the following code
+Inside  <appname>/views.py and replace it with the your views Ex:
 
     from django.http import HttpResponse
 
@@ -22,25 +22,31 @@ Inside  <appname>/views.py and replace it with the following code
     def index(request):
         return HttpResponse("Hello, world. You're at the polls index.")
 
-Then inside  <appname>/urls.py replace it with 
+    def detail(request, question_id):
+        return HttpResponse("You're looking at question %s." % question_id)
 
-    from django.urls import path
+    def results(request, question_id):
+        response = "You're looking at the results of question %s."
+        return HttpResponse(response % question_id)
 
-    from . import views
-
-    urlpatterns = [
-        path('', views.index, name='index'),
-    ]
+    def vote(request, question_id):
+        return HttpResponse("You're voting on question %s." % question_id)
 
 Now inside <name>/urls.py we need to point the URLconf to the paths we just created add the following code
 
     from django.contrib import admin
     from django.urls import include, path
 
-    urlpatterns = [
-        path('polls/', include('polls.urls')),
-        path('admin/', admin.site.urls),
-    ]
+urlpatterns = [
+    # ex: /polls/
+    path('', views.index, name='index'),
+    # ex: /polls/5/
+    path('<int:question_id>/', views.detail, name='detail'),
+    # ex: /polls/5/results/
+    path('<int:question_id>/results/', views.results, name='results'),
+    # ex: /polls/5/vote/
+    path('<int:question_id>/vote/', views.vote, name='vote'),
+]
 
 Quoted from djangoproject.com 
 
@@ -170,3 +176,38 @@ To add models to the admin interface inside <appname>/admin.py add the following
     from .models import <Model>
 
     admin.site.register(<Model>)
+
+## Writing Tests
+
+
+* in <appname>/tests.py create a subclass of TestCase and give it methods that will be used as tests
+
+    from django.test import TestCase
+
+    import datetime
+
+    from django.test import TestCase
+    from django.utils import timezone
+
+    from .models import Question
+
+
+    class QuestionModelTests(TestCase):
+
+        def test_was_published_recently_with_future_question(self):
+            """
+            was_published_recently() returns False for questions whose pub_date
+            is in the future.
+            """
+            time = timezone.now() + datetime.timedelta(days=30)
+            future_question = Question(pub_date=time)
+            self.assertIs(future_question.was_published_recently(), False)
+
+        def test_was_published_recently_with_old_question(self):
+            """
+            was_published_recently() returns False for questions whose pub_date
+            is older than 1 day.
+            """
+            time = timezone.now() - datetime.timedelta(days=1,seconds=1)
+            old_question = Question(pub_date=time)
+            self.assertIs(old_question.was_published_recently(),False)
