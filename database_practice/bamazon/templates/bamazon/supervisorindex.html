@@ -1,0 +1,13 @@
+<a href="add">Add Product</a>
+
+{% if departments %}
+    <ul>
+    {% for department in departments %}
+        <li>NAME:{{department.department_name }}COSTS:{{ department.over_head_costs }}SALES:{{department.product_sales}}PROFIT: {{department.total_profit}}</li> 
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No departments are available.</p>
+{% endif %}
+
+

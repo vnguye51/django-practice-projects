@@ -1,0 +1,13 @@
+<h1>{{ item }}</h1>
+<p>{{ item.department_name}}</p>
+<p>{{ item.price}}</p>
+<p>{{ item.stock}}</p>
+
+<form method="POST">{%csrf_token%}
+    <input type="number" name="amount">
+    <input class="btn" type="submit" value="Submit" />
+</form>
+
+{% if error %}
+    <p>{{error}}</p>
+{% endif %}

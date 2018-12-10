@@ -4,7 +4,7 @@ Use the command
 
     django-admin startproject <name>
 
-## 2. Creating an app
+## 2. Starting an app
 
 Use the command 
 
@@ -12,25 +12,21 @@ Use the command
 
 ## 3. Creating views
 
+** REMEMBER TO ADD <appname>.apps.<appname>Config to INSTALLED_APPS inside settings.py
+
 In the views folder 
 
 Inside  <appname>/views.py and replace it with the your views Ex:
 
-    from django.http import HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.template import loader
+from django.urls import reverse
+from django.views import generic
+from django.utils import timezone
 
-
-    def index(request):
-        return HttpResponse("Hello, world. You're at the polls index.")
-
-    def detail(request, question_id):
-        return HttpResponse("You're looking at question %s." % question_id)
-
-    def results(request, question_id):
-        response = "You're looking at the results of question %s."
-        return HttpResponse(response % question_id)
-
-    def vote(request, question_id):
-        return HttpResponse("You're voting on question %s." % question_id)
+def index(request):
+    return render(request,"bamazon/index.html")
 
 Now inside <name>/urls.py we need to point the URLconf to the paths we just created add the following code
 
@@ -48,16 +44,6 @@ urlpatterns = [
     path('<int:question_id>/vote/', views.vote, name='vote'),
 ]
 
-Quoted from djangoproject.com 
-
-"The include() function allows referencing other URLconfs. Whenever Django encounters include(), it chops off whatever part of the URL matched up to that point and sends the remaining string to the included URLconf for further processing.
-
-path(route, view, **kwargs, **name)
-
-route: is a string that contains a URL pattern. When processing a request, Django starts at the first pattern in urlpatterns and makes its way down the list, comparing the requested URL against each pattern until it finds one that matches.
-
-view: When Django finds a matching pattern, it calls the specified view function with an HttpRequest object as the first argument and any “captured” values from the route as keyword arguments. We’ll give an example of this in a bit.
-
 ## 4. Setting up a database and other configs
 
 sqlite works out of the box with python, for other backends we need to connect it to python.
@@ -71,7 +57,7 @@ To connect a database to the project inside settings.py add in the database para
 
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'python_polls',
+            'NAME': '<database name>',
             'USER': 'root',
             'PASSWORD': '7182011',
             'HOST': '127.0.0.1',
@@ -104,31 +90,13 @@ Example models:
 The first field argument is the name as in "date published" otherwised the property name will be used instead as in question_text
 
 Now run 
-
+    python manage.py makemigrations
     python manage.py migrate
 
 This looks at INSTALLED_APPS and creates the tables necessary for them
 
-## 6. Activating models
-
-Now we need to tell the project where the app is installed so inside "<name>/settings.py"
-
-add the path to INSTALLED_APPS so that it looks like:
-
-    INSTALLED_APPS = [
-        '<appname>.apps.PollsConfig',
-        ...
-    ]
-
-Now run 
-
-    python manage.py makemigrations
-
-makemigrations tells Django that changes were made to the apps or models
-
 If you want run "manage.py sqlmigrate <appname> 0001" to see the SQL code that python generated
 
-* Now run "python manage.py migrate" to create the updated models in the database
 
 ## Django API Stuff
 

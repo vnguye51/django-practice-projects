@@ -1,0 +1,14 @@
+<a href="/bamazon/manager/low">View Low Stock</a>
+<a href="bamazon/add">Add Product</a>
+
+{% if items %}
+    <ul>
+    {% for item in items %}
+        <li><a href= "details/{{item.id}}">{{ item }}</a></li> {{item.stock}}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No items are available.</p>
+{% endif %}
+
+
